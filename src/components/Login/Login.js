@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import Card from "../UI/Card/Card";
 import styles from "./Login.module.css";
@@ -11,20 +11,16 @@ const Login = (props) => {
   const [passwordIsValid, setPasswordIsValid] = useState();
   const [formIsValid, setFormIsValid] = useState(false);
 
+  useEffect(() => {
+    setFormIsValid(inputEmail.includes("@") && inputPassword.trim().length > 7);
+  }, [inputEmail, inputPassword])
+
   const emailChangeHandler = (event) => {
     setInputEmail(event.target.value);
-
-    setFormIsValid(
-      event.target.value.includes("@") && inputPassword.trim().length > 7
-    );
   };
 
   const passwordChangeHandler = (event) => {
     setInputPassword(event.target.value);
-
-    setFormIsValid(
-      event.target.value.trim().length > 6 && inputEmail.includes("@")
-    );
   };
 
   const validateEmailHandler = () => {
@@ -44,9 +40,8 @@ const Login = (props) => {
     <Card className={styles.login}>
       <form onSubmit={submitHandler}>
         <div
-          className={`${styles.control} ${
-            emailIsValid === false ? styles.invalid : ""
-          }`}
+          className={`${styles.control} ${emailIsValid === false ? styles.invalid : ""
+            }`}
         >
           <label htmlFor="email">Email</label>
           <input
@@ -58,9 +53,8 @@ const Login = (props) => {
           />
         </div>
         <div
-          className={`${styles.control} ${
-            passwordIsValid === false ? styles.invalid : ""
-          }`}
+          className={`${styles.control} ${passwordIsValid === false ? styles.invalid : ""
+            }`}
         >
           <label htmlFor="password">Пароль</label>
           <input
