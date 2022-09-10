@@ -17,7 +17,7 @@ const Login = (props) => {
       setFormIsValid(
         inputEmail.includes("@") && inputPassword.trim().length > 7
       );
-    }, 3000);
+    }, 1000);
 
     return () => {
       console.log('Очистка');
