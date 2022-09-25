@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useContext } from "react";
+import React, { useState, useEffect, useReducer, useContext, useRef } from "react";
 
 import Card from "../UI/Card/Card";
 import styles from "./Login.module.css";
@@ -55,22 +55,25 @@ const Login = (props) => {
   const [passwordState, dispatchPasswordState] = useReducer(passwordReducer, { value: '', isValid: undefined });
 
 
-  const { isValid: emailIvValid } = emailState;
+  const { isValid: emailIsValid } = emailState;
   const { isValid: passwordIsValid } = passwordState;
 
   const ctx = useContext(AuthContext)
 
+  const emailInputRef = useRef();
+  const passwordInputRef = useRef();
+
   useEffect(() => {
     const timer = setTimeout(() => {
       console.log('Effect function');
-      setFormIsValid(emailIvValid && passwordIsValid);
+      setFormIsValid(emailIsValid && passwordIsValid);
     }, 1000);
 
     return () => {
       console.log('Очистка');
       clearTimeout(timer);
     };
-  }, [emailIvValid, passwordIsValid])
+  }, [emailIsValid, passwordIsValid])
 
   const emailChangeHandler = (event) => {
     dispatchEmailState({ type: 'USER_INPUT', value: event.target.value });
@@ -94,16 +97,23 @@ const Login = (props) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    ctx.onLogin(emailState.value, passwordState.value);
+    if (formIsValid) {
+      ctx.onLogin(emailState.value, passwordState.value);
+    } else if (!emailIsValid) {
+      emailInputRef.current.focus();
+    } else {
+      passwordInputRef.current.focus();
+    }
+
   };
 
   return (
     <Card className={styles.login}>
       <form onSubmit={submitHandler}>
-        <Input id='email' label='Email' type='email' isValid={emailIvValid} value={emailState.value} onChange={emailChangeHandler} onBlur={validateEmailHandler} />
-        <Input id='password' label='Пароль' type='password' isValid={passwordIsValid} value={passwordState.value} onChange={passwordChangeHandler} onBlur={validatePasswordHandler} />
+        <Input ref={emailInputRef} id='email' label='Email' type='email' isValid={emailIsValid} value={emailState.value} onChange={emailChangeHandler} onBlur={validateEmailHandler} />
+        <Input ref={passwordInputRef} id='password' label='Пароль' type='password' isValid={passwordIsValid} value={passwordState.value} onChange={passwordChangeHandler} onBlur={validatePasswordHandler} />
         <div className={styles.actions}>
-          <Button type="submit" className={styles.btn} disabled={!formIsValid}>
+          <Button type="submit" className={styles.btn}>
             Вход
           </Button>
         </div>
